@@ -1,12 +1,10 @@
 package com.jskhaleel.openepubreader
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -39,14 +37,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainPage() {
     val context = LocalContext.current
-    Column {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Button(
             onClick = {
-                val intent = Intent(context, BookActivity::class.java)
-                context.startActivity(intent)
-            }, modifier = Modifier
-                .wrapContentWidth()
-                .align(Alignment.CenterHorizontally)
+
+            },
         ) {
             Text(text = "Open book")
         }

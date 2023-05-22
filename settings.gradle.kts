@@ -4,6 +4,12 @@ pluginManagement {
         google()
         mavenCentral()
     }
+
+    plugins {
+        id("com.android.application") version ("8.0.1")
+        id("com.android.library") version ("8.0.1")
+        id("org.jetbrains.kotlin.android") version ("1.8.21")
+    }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -11,10 +17,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url 'https://jitpack.io' }
     }
 }
 
 rootProject.name = "OpenEpubReader"
-include ':app'
-include ':epubreader'
+include(":app")
+include(":epubreader")
