@@ -65,13 +65,26 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.fragment:fragment-ktx:1.5.7")
+    implementation("androidx.paging:paging-runtime-ktx:3.1.1")
+
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
 
     //==================== Compose ====================//
     implementation("androidx.activity:activity-compose:1.7.1")
+    implementation("androidx.compose.material:material:1.4.3")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    implementation("com.google.android.material:compose-theme-adapter:1.2.1")
 
     //==================== Readium ====================//
     implementation("org.readium.kotlin-toolkit:readium-shared:2.3.0")
@@ -79,6 +92,7 @@ dependencies {
     implementation("org.readium.kotlin-toolkit:readium-navigator:2.3.0")
     implementation("org.readium.kotlin-toolkit:readium-opds:2.3.0")
     implementation("org.readium.kotlin-toolkit:readium-lcp:2.3.0")
+    implementation("org.readium.kotlin-toolkit:readium-navigator-media2:2.3.0")
 
     //==================== Database ====================//
     val roomVersion = "2.5.1"
