@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="return_publication">This will return the publication</string>
+    <string name="return_button">Return</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="more_options">More Options</string>
+
+    <string name="drm_information_header">INFORMATION</string>
+    <string name="drm_label_license_type">License Type</string>
+    <string name="drm_label_state">State</string>
+    <string name="drm_label_provider">Provider</string>
+    <string name="drm_label_issued">Issued</string>
+    <string name="drm_label_updated">Updated</string>
+    <string name="drm_label_rights">RIGHTS</string>
+    <string name="drm_label_prints_left">Prints left</string>
+    <string name="drm_label_copies_left">Copies left</string>
+    <string name="drm_label_start">Start</string>
+    <string name="drm_label_end">End</string>
+    <string name="drm_label_potential_right_end">Potential right end</string>
+    <string name="drm_label_actions">ACTIONS</string>
+    <string name="drm_label_renew">RENEW</string>
+    <string name="drm_label_return">RETURN</string>
+    <string name="zero">00:00</string>
+    <string name="chapter">Chapter</string>
+    <string name="chapter_page">Chapter / Page</string>
+    <string name="progression">Progression</string>
+    <string name="timestamp">Timestamp</string>
+
+    <!-- Outlines -->
+    <string name="contents_tab_label">Contents</string>
+    <string name="bookmarks_tab_label">Bookmarks</string>
+    <string name="highlights_tab_label">Highlights</string>
+    <string name="pagelist_tab_label">Page List</string>
+    <string name="landmarks_tab_label">Landmarks</string>
+</resources>
