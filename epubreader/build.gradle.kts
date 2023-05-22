@@ -66,6 +66,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("androidx.paging:paging-runtime-ktx:3.1.1")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     implementation("androidx.lifecycle:lifecycle-common-java8:2.5.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
@@ -85,6 +86,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.4.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
     implementation("com.google.android.material:compose-theme-adapter:1.2.1")
+    implementation("androidx.compose.material:material-icons-extended:1.4.3")
 
     //==================== Readium ====================//
     implementation("org.readium.kotlin-toolkit:readium-shared:2.3.0")

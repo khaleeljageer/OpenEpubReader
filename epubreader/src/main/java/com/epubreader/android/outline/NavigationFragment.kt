@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
 import com.epubreader.android.databinding.FragmentListviewBinding
 import com.epubreader.android.databinding.ItemRecycleNavigationBinding
+import com.epubreader.android.reader.ReaderViewModel
 import org.readium.r2.shared.publication.Link
 import org.readium.r2.shared.publication.Publication
 import com.epubreader.android.utils.extensions.outlineTitle

@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.epubreader.android.R
 import com.epubreader.android.databinding.FragmentDrmManagementBinding
+import com.epubreader.android.reader.ReaderViewModel
 import com.epubreader.android.utils.viewLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -37,7 +38,7 @@ class DrmManagementFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         val publication =
-            ViewModelProvider(requireActivity()).get(ReaderViewModel::class.java).publication
+            ViewModelProvider(requireActivity())[ReaderViewModel::class.java].publication
         val license = checkNotNull(publication.lcpLicense)
         val renewListener = MaterialRenewListener(
             license = license,

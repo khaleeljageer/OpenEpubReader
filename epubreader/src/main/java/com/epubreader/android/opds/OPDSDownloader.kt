@@ -44,12 +44,12 @@ class OPDSDownloader(context: Context) {
         url: String
     ): Try<Pair<String, String>, Exception> {
         val fileName = UUID.randomUUID().toString()
-        if (DEBUG) Timber.i("download url %s", url)
+//        if (BuildConfig.DEBUG) Timber.i("download url %s", url)
         return DefaultHttpClient().download(HttpRequest(url), File(rootDir, fileName))
             .flatMap {
                 try {
-                    if (DEBUG) Timber.i("response url %s", it.url)
-                    if (DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
+//                    if (BuildConfig.DEBUG) Timber.i("response url %s", it.url)
+//                    if (BuildConfig.DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
                     if (url == it.url) {
                         Try.success(Pair(rootDir + fileName, fileName))
                     } else {
@@ -67,8 +67,8 @@ class OPDSDownloader(context: Context) {
     ): Try<Pair<String, String>, Exception> {
         return DefaultHttpClient().download(HttpRequest(responseUrl), File(rootDir, fileName))
             .flatMap {
-                if (DEBUG) Timber.i("response url %s", it.url)
-                if (DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
+//                if (BuildConfig.DEBUG) Timber.i("response url %s", it.url)
+//                if (BuildConfig.DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
                 try {
                     Try.success(Pair(rootDir + fileName, fileName))
                 } catch (e: Exception) {

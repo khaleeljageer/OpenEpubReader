@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.epubreader.android.R
 import com.epubreader.android.databinding.FragmentOutlineBinding
+import com.epubreader.android.reader.ReaderActivity
+import com.epubreader.android.reader.ReaderViewModel
 import com.epubreader.android.utils.viewLifecycle
 import com.google.android.material.tabs.TabLayoutMediator
 import org.readium.r2.shared.publication.Publication

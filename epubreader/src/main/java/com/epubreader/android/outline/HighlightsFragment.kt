@@ -23,6 +23,7 @@ import com.epubreader.android.R
 import com.epubreader.android.databinding.FragmentListviewBinding
 import com.epubreader.android.databinding.ItemRecycleHighlightBinding
 import com.epubreader.android.domain.model.Highlight
+import com.epubreader.android.reader.ReaderViewModel
 import com.epubreader.android.utils.viewLifecycle
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

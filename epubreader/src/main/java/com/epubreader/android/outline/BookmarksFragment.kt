@@ -22,6 +22,7 @@ import com.epubreader.android.R
 import com.epubreader.android.databinding.FragmentListviewBinding
 import com.epubreader.android.databinding.ItemRecycleBookmarkBinding
 import com.epubreader.android.domain.model.Bookmark
+import com.epubreader.android.reader.ReaderViewModel
 import com.epubreader.android.utils.extensions.outlineTitle
 import com.epubreader.android.utils.viewLifecycle
 import org.joda.time.DateTime
