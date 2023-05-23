@@ -95,6 +95,7 @@ dependencies {
     implementation("org.readium.kotlin-toolkit:readium-opds:2.3.0")
     implementation("org.readium.kotlin-toolkit:readium-lcp:2.3.0")
     implementation("org.readium.kotlin-toolkit:readium-navigator-media2:2.3.0")
+    implementation("org.readium.kotlin-toolkit:readium-shared:2.3.0")
 
     //==================== Database ====================//
     val roomVersion = "2.5.1"

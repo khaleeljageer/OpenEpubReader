@@ -18,7 +18,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
+import androidx.lifecycle.ViewModelProvider
 import com.epubreader.android.R
+import com.epubreader.android.ReadiumApplication
 import com.epubreader.android.databinding.ActivityReaderBinding
 import com.epubreader.android.drm.DrmManagementContract
 import com.epubreader.android.drm.DrmManagementFragment
@@ -37,10 +39,14 @@ open class ReaderActivity : AppCompatActivity() {
 
     private val model: ReaderViewModel by viewModels()
 
-//    override fun getDefaultViewModelProviderFactory(): ViewModelProvider.Factory {
-//        val arguments = ReaderActivityContract.parseIntent(this)
-//        return ReaderViewModel.createFactory(application as Application, arguments)
-//    }
+
+
+    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+        get() {
+            val arguments = ReaderActivityContract.parseIntent(this)
+            return ReaderViewModel.createFactory(application as ReadiumApplication, arguments)
+        }
+
 
     private lateinit var binding: ActivityReaderBinding
     private lateinit var readerFragment: BaseReaderFragment
@@ -99,7 +105,8 @@ open class ReaderActivity : AppCompatActivity() {
 
         // Add support for display cutout.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
     }
 
@@ -161,7 +168,12 @@ open class ReaderActivity : AppCompatActivity() {
 
     private fun showOutlineFragment() {
         supportFragmentManager.commit {
-            add(R.id.activity_container, OutlineFragment::class.java, Bundle(), OUTLINE_FRAGMENT_TAG)
+            add(
+                R.id.activity_container,
+                OutlineFragment::class.java,
+                Bundle(),
+                OUTLINE_FRAGMENT_TAG
+            )
             hide(readerFragment)
             addToBackStack(null)
         }

@@ -32,7 +32,7 @@ import androidx.datastore.preferences.core.Preferences as JetpackPreferences
  * Pass the method result to the activity to enable it to know which current publication it must
  * retrieve from this rep+ository - media or visual.
  */
-@OptIn(ExperimentalMedia2::class, ExperimentalReadiumApi::class)
+@OptIn(ExperimentalReadiumApi::class)
 class ReaderRepository(
     private val application: Application,
     private val readium: Readium,
