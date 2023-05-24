@@ -17,6 +17,7 @@ import com.epubreader.android.LITERATA
 import com.epubreader.android.R
 import com.epubreader.android.reader.preferences.UserPreferencesViewModel
 import com.epubreader.android.search.SearchFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.readium.r2.navigator.DecorableNavigator
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.ExperimentalDecorator
@@ -29,6 +30,7 @@ import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.epub.pageList
 
+@AndroidEntryPoint
 @OptIn(ExperimentalReadiumApi::class, ExperimentalDecorator::class)
 class EpubReaderFragment : VisualReaderFragment(), EpubNavigatorFragment.Listener {
 

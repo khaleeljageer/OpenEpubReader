@@ -1,8 +1,8 @@
 package com.jskhaleel.openepubreader
 
-import com.epubreader.android.ReadiumApplication
+import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class TestApp : ReadiumApplication() {
+class TestApp : Application() {
 }

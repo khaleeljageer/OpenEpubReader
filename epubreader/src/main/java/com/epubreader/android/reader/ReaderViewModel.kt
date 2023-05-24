@@ -10,6 +10,7 @@ package com.epubreader.android.reader
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.InvalidatingPagingSourceFactory
@@ -19,11 +20,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.epubreader.android.ReadiumApplication
 import com.epubreader.android.data.BookRepository
+import com.epubreader.android.data.ReaderRepository
 import com.epubreader.android.domain.model.Highlight
 import com.epubreader.android.reader.preferences.UserPreferencesViewModel
 import com.epubreader.android.reader.tts.TtsViewModel
 import com.epubreader.android.search.SearchPagingSource
 import com.epubreader.android.utils.EventChannel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -46,13 +49,26 @@ import org.readium.r2.shared.publication.services.search.SearchIterator
 import org.readium.r2.shared.publication.services.search.SearchTry
 import org.readium.r2.shared.publication.services.search.search
 import org.readium.r2.shared.util.Try
+import javax.inject.Inject
 
+@HiltViewModel
 @OptIn(Search::class, ExperimentalDecorator::class, ExperimentalCoroutinesApi::class)
-class ReaderViewModel(
-    readiumApplication: ReadiumApplication,
-    val readerInitData: ReaderInitData,
+class ReaderViewModel @Inject constructor(
     private val bookRepository: BookRepository,
+    private val readerRepository: ReaderRepository,
+    private val state: SavedStateHandle
 ) : ViewModel() {
+
+    init {
+        val readerInitData =
+            try {
+                val readerRepository = readerRepository.getCompleted()
+                checkNotNull(readerRepository[arguments.bookId])
+            } catch (e: Exception) {
+                // Fallbacks on a dummy Publication to avoid crashing the app until the Activity finishes.
+                DummyReaderInitData(arguments.bookId)
+            }
+    }
 
     val publication: Publication =
         readerInitData.publication
@@ -102,7 +118,6 @@ class ReaderViewModel(
     }
 
     // Highlights
-
     val highlights: Flow<List<Highlight>> by lazy {
         bookRepository.highlightsForBook(bookId)
     }
@@ -270,18 +285,26 @@ class ReaderViewModel(
     }
 
     companion object {
-        fun createFactory(readiumApplication: ReadiumApplication, arguments: ReaderActivityContract.Arguments) =
+        fun createFactory(
+            readiumApplication: ReadiumApplication,
+            arguments: ReaderActivityContract.Arguments
+        ) =
             createViewModelFactory {
                 val readerInitData =
                     try {
-                        val readerRepository = readiumApplication.readerRepository.getCompleted()
+                        val readerRepository =
+                            readiumApplication.readerRepositoryImpl.getCompleted()
                         checkNotNull(readerRepository[arguments.bookId])
                     } catch (e: Exception) {
                         // Fallbacks on a dummy Publication to avoid crashing the app until the Activity finishes.
                         DummyReaderInitData(arguments.bookId)
                     }
 
-                ReaderViewModel(readiumApplication, readerInitData, readiumApplication.bookRepository)
+                ReaderViewModel(
+                    readiumApplication,
+                    readerInitData,
+                    readiumApplication.bookRepositoryImpl
+                )
             }
     }
 }

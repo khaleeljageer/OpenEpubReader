@@ -68,12 +68,12 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.1.1")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    implementation("androidx.lifecycle:lifecycle-common-java8:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-saved-state:2.5.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     testImplementation("junit:junit:4.13.2")
@@ -107,4 +107,9 @@ dependencies {
 
     //==================== Logging ====================//
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    //==================== Dependency Injection ====================
+    implementation("com.google.dagger:hilt-android:2.44.2")
+    kapt("com.google.dagger:hilt-compiler:2.44.2")
+    kapt("com.google.dagger:hilt-android-compiler:2.44.2")
 }

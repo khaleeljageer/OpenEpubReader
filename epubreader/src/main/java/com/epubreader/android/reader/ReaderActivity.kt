@@ -26,6 +26,7 @@ import com.epubreader.android.drm.DrmManagementContract
 import com.epubreader.android.drm.DrmManagementFragment
 import com.epubreader.android.outline.OutlineContract
 import com.epubreader.android.outline.OutlineFragment
+import dagger.hilt.android.AndroidEntryPoint
 import org.readium.navigator.media2.ExperimentalMedia2
 import org.readium.r2.shared.UserException
 import org.readium.r2.shared.publication.Locator
@@ -35,11 +36,9 @@ import org.readium.r2.shared.publication.Locator
  *
  * This class can be used as it is or be inherited from.
  */
+@AndroidEntryPoint
 open class ReaderActivity : AppCompatActivity() {
-
-    private val model: ReaderViewModel by viewModels()
-
-
+    private val readerViewModel: ReaderViewModel by viewModels()
 
     override val defaultViewModelProviderFactory: ViewModelProvider.Factory
         get() {
@@ -57,7 +56,7 @@ open class ReaderActivity : AppCompatActivity() {
          * was killed because the [ReaderRepository] is empty.
          * In that case, finish the activity as soon as possible and go back to the previous one.
          */
-        if (model.publication.readingOrder.isEmpty()) {
+        if (readerViewModel.publication.readingOrder.isEmpty()) {
             finish()
         }
 
@@ -70,7 +69,7 @@ open class ReaderActivity : AppCompatActivity() {
 
         val readerFragment = supportFragmentManager.findFragmentByTag(READER_FRAGMENT_TAG)
             ?.let { it as BaseReaderFragment }
-            ?: run { createReaderFragment(model.readerInitData) }
+            ?: run { createReaderFragment(readerViewModel.readerInitData) }
 
         if (readerFragment is VisualReaderFragment) {
             val fullscreenDelegate = FullscreenReaderActivityDelegate(this, readerFragment, binding)
@@ -79,7 +78,7 @@ open class ReaderActivity : AppCompatActivity() {
 
         readerFragment?.let { this.readerFragment = it }
 
-        model.activityChannel.receive(this) { handleReaderFragmentEvent(it) }
+        readerViewModel.activityChannel.receive(this) { handleReaderFragmentEvent(it) }
 
         reconfigureActionBar()
 
@@ -135,7 +134,7 @@ open class ReaderActivity : AppCompatActivity() {
         val currentFragment = supportFragmentManager.fragments.lastOrNull()
 
         title = when (currentFragment) {
-            is OutlineFragment -> model.publication.metadata.title
+            is OutlineFragment -> readerViewModel.publication.metadata.title
             is DrmManagementFragment -> getString(R.string.title_fragment_drm_management)
             else -> null
         }

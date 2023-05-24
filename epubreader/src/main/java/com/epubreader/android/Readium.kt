@@ -22,7 +22,7 @@ class Readium(context: Context) {
      * The LCP service decrypts LCP-protected publication and acquire publications from a
      * license file.
      */
-    val lcpService = LcpService(context)
+    private val lcpService = LcpService(context)
         ?.let { Try.success(it) }
         ?: Try.failure(Exception("liblcp is missing on the classpath"))
 
