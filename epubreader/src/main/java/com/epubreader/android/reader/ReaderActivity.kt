@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.readium.navigator.media2.ExperimentalMedia2
 import org.readium.r2.shared.UserException
 import org.readium.r2.shared.publication.Locator
+import timber.log.Timber
 
 /*
  * An activity to read a publication
@@ -38,27 +39,19 @@ import org.readium.r2.shared.publication.Locator
 open class ReaderActivity : AppCompatActivity() {
     private val readerViewModel: ReaderViewModel by viewModels()
 
-    /*override val defaultViewModelProviderFactory: ViewModelProvider.Factory
-        get() {
-            val arguments = ReaderActivityContract.parseIntent(this)
-            return ReaderViewModel.createFactory(application as ReadiumApplication, arguments)
-     }*/
-
-
     private lateinit var binding: ActivityReaderBinding
     private lateinit var readerFragment: BaseReaderFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         /*
-         * We provide dummy publications if the [ReaderActivity] is restored after the app process
-         * was killed because the [ReaderRepository] is empty.
-         * In that case, finish the activity as soon as possible and go back to the previous one.
-         */
+        * We provide dummy publications if the [ReaderActivity] is restored after the app process
+        * was killed because the [ReaderRepository] is empty.
+        * In that case, finish the activity as soon as possible and go back to the previous one.
+        */
         if (readerViewModel.publication.readingOrder.isEmpty()) {
             finish()
         }
-
-        super.onCreate(savedInstanceState)
 
         val binding = ActivityReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -67,7 +60,10 @@ open class ReaderActivity : AppCompatActivity() {
 
         val readerFragment = supportFragmentManager.findFragmentByTag(READER_FRAGMENT_TAG)
             ?.let { it as BaseReaderFragment }
-            ?: run { createReaderFragment(readerViewModel.readerInitData) }
+            ?: run {
+                Timber.tag("Khaleel").d("${readerViewModel.readerInitData}")
+                createReaderFragment(readerViewModel.readerInitData)
+            }
 
         if (readerFragment is VisualReaderFragment) {
             val fullscreenDelegate = FullscreenReaderActivityDelegate(this, readerFragment, binding)

@@ -1,6 +1,7 @@
 package com.jskhaleel.openepubreader
 
-import android.net.Uri
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -22,7 +23,10 @@ import com.epubreader.android.utils.onFailure
 import com.epubreader.android.utils.onSuccess
 import com.jskhaleel.openepubreader.ui.theme.OpenEpubReaderTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.IOException
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -56,11 +60,13 @@ fun MainPage(
     ) {
         Button(
             onClick = {
-                scope.launch {
-                    ReadiumConfig(context)
-                        .openBook(Uri.parse("file:///android_asset/1946.epub"))
+                scope.launch(Dispatchers.IO) {
+                    val config = ReadiumConfig(context)
+                    config
+                        .importBookFromAsset("1946.epub")
                         .onSuccess {
                             Log.d("Khaleel", "onSuccess $it")
+                            config.openBook(it, context as Activity)
                         }
                         .onFailure {
                             Log.d("Khaleel", "onFailure ${it.message}")
@@ -72,6 +78,19 @@ fun MainPage(
         }
     }
 }
+
+@Throws(IOException::class)
+fun getFileFromAssets(context: Context, fileName: String): File = File(context.cacheDir, fileName)
+    .also {
+        if (!it.exists()) {
+            it.outputStream().use { cache ->
+                context.assets.open(fileName).use { inputStream ->
+                    inputStream.copyTo(cache)
+                }
+            }
+        }
+    }
+
 
 @Preview(showBackground = true)
 @Composable

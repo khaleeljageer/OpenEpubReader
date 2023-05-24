@@ -17,6 +17,7 @@ import org.readium.r2.shared.publication.asset.FileAsset
 import org.readium.r2.shared.publication.services.isRestricted
 import org.readium.r2.shared.publication.services.protectionError
 import org.readium.r2.shared.util.Try
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 import androidx.datastore.preferences.core.Preferences as JetpackPreferences
@@ -40,6 +41,7 @@ class ReaderRepositoryImpl @Inject constructor(
         mutableMapOf()
 
     override fun getReaderInit(bookId: Long): ReaderInitData {
+        Timber.tag("Khaleel").d("getReaderInit : $bookId")
         return repository[bookId] ?: DummyReaderInitData(bookId = bookId)
     }
 

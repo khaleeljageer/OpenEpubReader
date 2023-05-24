@@ -9,9 +9,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.epubreader.android.Readium
+import com.epubreader.android.ReadiumConfig
 import com.epubreader.android.utils.extensions.computeStorageDir
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
@@ -29,12 +31,12 @@ class AppModule {
     fun provideReadium(@ApplicationContext context: Context): Readium {
         return Readium(context)
     }
-/*
+
     @Provides
     @Singleton
     fun provideStorageDir(@ApplicationContext context: Context): File {
         return context.computeStorageDir()
-    }*/
+    }
 
     @Provides
     @Singleton

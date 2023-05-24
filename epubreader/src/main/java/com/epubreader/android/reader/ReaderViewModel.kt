@@ -3,6 +3,7 @@ package com.epubreader.android.reader
 import android.content.Context
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.InvalidatingPagingSourceFactory
@@ -46,7 +47,12 @@ class ReaderViewModel @Inject constructor(
     private val readerRepository: ReaderRepository,
     @ApplicationContext context: Context,
 ) : ViewModel() {
-    val readerInitData = DummyReaderInitData(bookId = 123L)
+    private val _readerInitData = mutableStateOf<ReaderInitData>(DummyReaderInitData(bookId = -1))
+    val readerInitData: ReaderInitData = _readerInitData.value
+
+    init {
+        _readerInitData.value = readerRepository.getReaderInit(bookId = 1)
+    }
 
     val publication: Publication =
         readerInitData.publication

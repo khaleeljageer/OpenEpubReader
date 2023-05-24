@@ -1,17 +1,24 @@
 package com.epubreader.android
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import com.epubreader.android.data.BookRepository
 import com.epubreader.android.data.ReaderRepository
+import com.epubreader.android.reader.ReaderActivity
 import com.epubreader.android.utils.LocalReaderError
 import com.epubreader.android.utils.ReaderResult
 import com.epubreader.android.utils.extensions.computeStorageDir
 import com.epubreader.android.utils.extensions.copyToTempFile
 import com.epubreader.android.utils.extensions.moveTo
 import com.google.android.material.color.DynamicColors
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,27 +40,55 @@ import javax.inject.Singleton
 class ReadiumConfig @Inject constructor(
     private val context: Context
 ) {
-    val storageDir = context.computeStorageDir()
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface ReadiumConfigEntryPoint {
+        fun provideReadium(): Readium
+        fun provideCoroutineScope(): CoroutineScope
+        fun getBookRepository(): BookRepository
+        fun getReaderRepository(): ReaderRepository
+    }
 
-    @Inject
-    lateinit var readerRepository: ReaderRepository
+    private val hiltEntryPoint = EntryPointAccessors.fromApplication(
+        context,
+        ReadiumConfigEntryPoint::class.java
+    )
 
-    @Inject
-    lateinit var bookRepository: BookRepository
+    private val storageDir = context.computeStorageDir()
 
-    @Inject
-    lateinit var coroutineScope: CoroutineScope
+    private fun getReadium(): Readium {
+        return hiltEntryPoint.provideReadium()
+    }
 
-    @Inject
-    lateinit var readium: Readium
+    private fun getBookRepository(): BookRepository {
+        return hiltEntryPoint.getBookRepository()
+    }
+
+    private fun getReaderRepository(): ReaderRepository {
+        return hiltEntryPoint.getReaderRepository()
+    }
+
+    private fun provideCoroutineScope(): CoroutineScope {
+        return hiltEntryPoint.provideCoroutineScope()
+    }
+
 
     init {
         DynamicColors.applyToActivitiesIfAvailable(context.applicationContext as Application)
         Timber.plant(Timber.DebugTree())
     }
 
-    suspend fun openBook(path: Uri): ReaderResult<Long> {
-        val tempFile = path.copyToTempFile(context.applicationContext, storageDir)
+    suspend fun importBookFromAsset(fileName: String): ReaderResult<Long> {
+        val tempFile = (context.applicationContext as Application)
+            .assets.open(fileName)
+            .copyToTempFile(storageDir)
+        return if (tempFile != null) {
+            importPublication(tempFile)
+        } else ReaderResult.Failure(LocalReaderError("Files seems to be corrupted"))
+    }
+
+    suspend fun importBookFromUri(uri: Uri): ReaderResult<Long> {
+        val tempFile = uri.copyToTempFile(context.applicationContext, storageDir)
         return if (tempFile != null) {
             importPublication(tempFile)
         } else ReaderResult.Failure(LocalReaderError("Files seems to be corrupted"))
@@ -67,7 +102,7 @@ class ReadiumConfig @Inject constructor(
             if (sourceMediaType != MediaType.LCP_LICENSE_DOCUMENT)
                 FileAsset(sourceFile, sourceMediaType)
             else {
-                readium.lcpService
+                getReadium().lcpService
                     .flatMap { it.acquirePublication(sourceFile) }
                     .fold(
                         {
@@ -99,7 +134,7 @@ class ReadiumConfig @Inject constructor(
     }
 
     private suspend fun getPublicationId(libraryAsset: FileAsset): ReaderResult<Long> {
-        readium.streamer.open(libraryAsset, allowUserInteraction = false)
+        getReadium().streamer.open(libraryAsset, allowUserInteraction = false)
             .fold(
                 onSuccess = { publication ->
                     addPublicationToDatabase(
@@ -126,12 +161,30 @@ class ReadiumConfig @Inject constructor(
             )
     }
 
+    suspend fun openBook(bookId: Long, activity: Activity): ReaderResult<Unit> {
+        getReaderRepository().open(bookId, activity).fold(
+            onSuccess = {
+                launchReaderActivity(context = activity)
+                return ReaderResult.Success(Unit)
+            },
+            onFailure = {
+                return ReaderResult.Failure(LocalReaderError(it.message ?: "Unknown error"))
+            }
+        )
+    }
+
+    private fun launchReaderActivity(context: Context) {
+        val intent = Intent(context, ReaderActivity::class.java)
+        intent.putExtra("book_id", 1)
+        context.startActivity(intent)
+    }
+
     private suspend fun addPublicationToDatabase(
         href: String,
         mediaType: MediaType,
         publication: Publication
     ): Long {
-        val id = bookRepository.insertBook(href, mediaType, publication)
+        val id = getBookRepository().insertBook(href, mediaType, publication)
         storeCoverImage(publication, id.toString())
         return id
     }
@@ -140,7 +193,7 @@ class ReadiumConfig @Inject constructor(
         publication: Publication,
         imageName: String,
     ) {
-        coroutineScope.launch(Dispatchers.IO) {
+        provideCoroutineScope().launch(Dispatchers.IO) {
             val coverImageDir = File(storageDir, "covers/")
             if (!coverImageDir.exists()) {
                 coverImageDir.mkdirs()
