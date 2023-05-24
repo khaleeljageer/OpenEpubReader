@@ -18,9 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
-import androidx.lifecycle.ViewModelProvider
 import com.epubreader.android.R
-import com.epubreader.android.ReadiumApplication
 import com.epubreader.android.databinding.ActivityReaderBinding
 import com.epubreader.android.drm.DrmManagementContract
 import com.epubreader.android.drm.DrmManagementFragment
@@ -40,11 +38,11 @@ import org.readium.r2.shared.publication.Locator
 open class ReaderActivity : AppCompatActivity() {
     private val readerViewModel: ReaderViewModel by viewModels()
 
-    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+    /*override val defaultViewModelProviderFactory: ViewModelProvider.Factory
         get() {
             val arguments = ReaderActivityContract.parseIntent(this)
             return ReaderViewModel.createFactory(application as ReadiumApplication, arguments)
-        }
+     }*/
 
 
     private lateinit var binding: ActivityReaderBinding

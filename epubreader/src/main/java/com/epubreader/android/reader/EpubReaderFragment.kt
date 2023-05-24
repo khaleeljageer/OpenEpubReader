@@ -30,7 +30,6 @@ import org.readium.r2.shared.ExperimentalReadiumApi
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.epub.pageList
 
-@AndroidEntryPoint
 @OptIn(ExperimentalReadiumApi::class, ExperimentalDecorator::class)
 class EpubReaderFragment : VisualReaderFragment(), EpubNavigatorFragment.Listener {
 

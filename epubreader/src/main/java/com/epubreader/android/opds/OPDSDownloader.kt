@@ -11,17 +11,22 @@
 package com.epubreader.android.opds
 
 import android.content.Context
-import java.io.File
-import java.io.FileOutputStream
-import java.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import org.readium.r2.shared.util.Try
 import org.readium.r2.shared.util.flatMap
-import org.readium.r2.shared.util.http.*
+import org.readium.r2.shared.util.http.DefaultHttpClient
+import org.readium.r2.shared.util.http.HttpClient
+import org.readium.r2.shared.util.http.HttpException
+import org.readium.r2.shared.util.http.HttpRequest
+import org.readium.r2.shared.util.http.HttpResponse
+import org.readium.r2.shared.util.http.HttpTry
 import org.readium.r2.shared.util.mediatype.MediaType
-import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.util.Properties
+import java.util.UUID
 
 class OPDSDownloader(context: Context) {
 
@@ -44,12 +49,9 @@ class OPDSDownloader(context: Context) {
         url: String
     ): Try<Pair<String, String>, Exception> {
         val fileName = UUID.randomUUID().toString()
-//        if (BuildConfig.DEBUG) Timber.i("download url %s", url)
         return DefaultHttpClient().download(HttpRequest(url), File(rootDir, fileName))
             .flatMap {
                 try {
-//                    if (BuildConfig.DEBUG) Timber.i("response url %s", it.url)
-//                    if (BuildConfig.DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
                     if (url == it.url) {
                         Try.success(Pair(rootDir + fileName, fileName))
                     } else {
@@ -67,8 +69,6 @@ class OPDSDownloader(context: Context) {
     ): Try<Pair<String, String>, Exception> {
         return DefaultHttpClient().download(HttpRequest(responseUrl), File(rootDir, fileName))
             .flatMap {
-//                if (BuildConfig.DEBUG) Timber.i("response url %s", it.url)
-//                if (BuildConfig.DEBUG) Timber.i("download destination %s %s %s", "%s%s", rootDir, fileName)
                 try {
                     Try.success(Pair(rootDir + fileName, fileName))
                 } catch (e: Exception) {

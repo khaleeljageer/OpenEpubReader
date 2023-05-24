@@ -1,9 +1,3 @@
-/*
- * Copyright 2022 Readium Foundation. All rights reserved.
- * Use of this source code is governed by the BSD-style license
- * available in the top-level LICENSE file of the project.
- */
-
 package com.epubreader.android.data
 
 import android.app.Activity
@@ -45,8 +39,9 @@ class ReaderRepositoryImpl @Inject constructor(
     private val repository: MutableMap<Long, ReaderInitData> =
         mutableMapOf()
 
-    operator fun get(bookId: Long): ReaderInitData? =
-        repository[bookId]
+    override fun getReaderInit(bookId: Long): ReaderInitData {
+        return repository[bookId] ?: DummyReaderInitData(bookId = bookId)
+    }
 
     override suspend fun open(bookId: Long, activity: Activity): Try<Unit, Exception> {
         return try {
@@ -109,8 +104,8 @@ class ReaderRepositoryImpl @Inject constructor(
         publication: Publication,
         initialLocator: Locator?
     ): EpubReaderInitData {
-
-        val preferencesManager = EpubPreferencesManagerFactory(preferencesDataStore).createPreferenceManager(bookId)
+        val preferencesManager =
+            EpubPreferencesManagerFactory(preferencesDataStore).createPreferenceManager(bookId)
         val navigatorFactory = EpubNavigatorFactory(publication)
 
         return EpubReaderInitData(

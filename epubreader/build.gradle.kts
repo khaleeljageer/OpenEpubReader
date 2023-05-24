@@ -1,5 +1,6 @@
 plugins {
     id("com.android.library")
+    id("dagger.hilt.android.plugin")
     kotlin("android")
     kotlin("kapt")
     kotlin("plugin.parcelize")
@@ -73,7 +74,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-saved-state:2.5.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
 
     testImplementation("junit:junit:4.13.2")

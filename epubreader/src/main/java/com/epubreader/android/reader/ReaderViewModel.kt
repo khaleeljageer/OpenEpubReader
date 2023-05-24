@@ -1,16 +1,8 @@
-/*
- * Copyright 2021 Readium Foundation. All rights reserved.
- * Use of this source code is governed by the BSD-style license
- * available in the top-level LICENSE file of the project.
- */
-
-@file:OptIn(ExperimentalReadiumApi::class, InternalReadiumApi::class)
-
 package com.epubreader.android.reader
 
+import android.content.Context
 import android.graphics.Color
 import androidx.annotation.ColorInt
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.InvalidatingPagingSourceFactory
@@ -18,7 +10,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.epubreader.android.ReadiumApplication
 import com.epubreader.android.data.BookRepository
 import com.epubreader.android.data.ReaderRepository
 import com.epubreader.android.domain.model.Highlight
@@ -27,7 +18,7 @@ import com.epubreader.android.reader.tts.TtsViewModel
 import com.epubreader.android.search.SearchPagingSource
 import com.epubreader.android.utils.EventChannel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,9 +28,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.ExperimentalDecorator
-import org.readium.r2.navigator.util.createViewModelFactory
-import org.readium.r2.shared.ExperimentalReadiumApi
-import org.readium.r2.shared.InternalReadiumApi
 import org.readium.r2.shared.Search
 import org.readium.r2.shared.UserException
 import org.readium.r2.shared.publication.Locator
@@ -52,23 +40,13 @@ import org.readium.r2.shared.util.Try
 import javax.inject.Inject
 
 @HiltViewModel
-@OptIn(Search::class, ExperimentalDecorator::class, ExperimentalCoroutinesApi::class)
+@OptIn(Search::class, ExperimentalDecorator::class)
 class ReaderViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val readerRepository: ReaderRepository,
-    private val state: SavedStateHandle
+    @ApplicationContext context: Context,
 ) : ViewModel() {
-
-    init {
-        val readerInitData =
-            try {
-                val readerRepository = readerRepository.getCompleted()
-                checkNotNull(readerRepository[arguments.bookId])
-            } catch (e: Exception) {
-                // Fallbacks on a dummy Publication to avoid crashing the app until the Activity finishes.
-                DummyReaderInitData(arguments.bookId)
-            }
-    }
+    val readerInitData = DummyReaderInitData(bookId = 123L)
 
     val publication: Publication =
         readerInitData.publication
@@ -83,7 +61,7 @@ class ReaderViewModel @Inject constructor(
         EventChannel(Channel(Channel.BUFFERED), viewModelScope)
 
     val tts: TtsViewModel? = TtsViewModel(
-        context = readiumApplication,
+        context = context,
         publication = readerInitData.publication,
         scope = viewModelScope
     )
@@ -282,29 +260,5 @@ class ReaderViewModel @Inject constructor(
     sealed class FeedbackEvent {
         object BookmarkSuccessfullyAdded : FeedbackEvent()
         object BookmarkFailed : FeedbackEvent()
-    }
-
-    companion object {
-        fun createFactory(
-            readiumApplication: ReadiumApplication,
-            arguments: ReaderActivityContract.Arguments
-        ) =
-            createViewModelFactory {
-                val readerInitData =
-                    try {
-                        val readerRepository =
-                            readiumApplication.readerRepositoryImpl.getCompleted()
-                        checkNotNull(readerRepository[arguments.bookId])
-                    } catch (e: Exception) {
-                        // Fallbacks on a dummy Publication to avoid crashing the app until the Activity finishes.
-                        DummyReaderInitData(arguments.bookId)
-                    }
-
-                ReaderViewModel(
-                    readiumApplication,
-                    readerInitData,
-                    readiumApplication.bookRepositoryImpl
-                )
-            }
     }
 }

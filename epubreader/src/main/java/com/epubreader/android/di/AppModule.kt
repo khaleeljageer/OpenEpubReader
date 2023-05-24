@@ -26,15 +26,15 @@ import javax.inject.Singleton
 class AppModule {
     @Provides
     @Singleton
-    fun provideStream(@ApplicationContext context: Context): Readium {
+    fun provideReadium(@ApplicationContext context: Context): Readium {
         return Readium(context)
     }
-
+/*
     @Provides
     @Singleton
     fun provideStorageDir(@ApplicationContext context: Context): File {
         return context.computeStorageDir()
-    }
+    }*/
 
     @Provides
     @Singleton
@@ -43,9 +43,19 @@ class AppModule {
             corruptionHandler = ReplaceFileCorruptionHandler(
                 produceNewData = { emptyPreferences() }
             ),
-            migrations = listOf(SharedPreferencesMigration(context, "navigator-preferences")),
+            migrations = listOf(SharedPreferencesMigration(context, PREFERENCE_NAME)),
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { context.preferencesDataStoreFile("navigator-preferences") }
+            produceFile = { context.preferencesDataStoreFile(PREFERENCE_NAME) }
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesCoroutineScope(): CoroutineScope {
+        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+
+    companion object {
+        private const val PREFERENCE_NAME = "navigator-preferences"
     }
 }
