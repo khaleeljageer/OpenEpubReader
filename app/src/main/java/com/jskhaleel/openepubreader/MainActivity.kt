@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import com.epubreader.android.ReadiumConfig
+import com.epubreader.android.ReaderConfig
 import com.epubreader.android.utils.onFailure
 import com.epubreader.android.utils.onSuccess
 import com.jskhaleel.openepubreader.ui.theme.OpenEpubReaderTheme
@@ -61,7 +61,7 @@ fun MainPage(
         Button(
             onClick = {
                 scope.launch(Dispatchers.IO) {
-                    val config = ReadiumConfig(context)
+                    val config = ReaderConfig(context)
                     config
                         .importBookFromAsset("1946.epub")
                         .onSuccess {

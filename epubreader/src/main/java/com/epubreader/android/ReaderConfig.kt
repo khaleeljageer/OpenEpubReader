@@ -34,13 +34,10 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ReadiumConfig @Inject constructor(
-    private val context: Context
-) {
+class ReaderConfig(private val application: Application) {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface ReadiumConfigEntryPoint {
@@ -50,12 +47,13 @@ class ReadiumConfig @Inject constructor(
         fun getReaderRepository(): ReaderRepository
     }
 
+
     private val hiltEntryPoint = EntryPointAccessors.fromApplication(
-        context,
+        application,
         ReadiumConfigEntryPoint::class.java
     )
 
-    private val storageDir = context.computeStorageDir()
+    private val storageDir = application.computeStorageDir()
 
     private fun getReadium(): Readium {
         return hiltEntryPoint.provideReadium()
@@ -75,12 +73,12 @@ class ReadiumConfig @Inject constructor(
 
 
     init {
-        DynamicColors.applyToActivitiesIfAvailable(context.applicationContext as Application)
+        DynamicColors.applyToActivitiesIfAvailable(application)
         Timber.plant(Timber.DebugTree())
     }
 
     suspend fun importBookFromAsset(fileName: String): ReaderResult<Long> {
-        val tempFile = (context.applicationContext as Application)
+        val tempFile = application
             .assets.open(fileName)
             .copyToTempFile(storageDir)
         return if (tempFile != null) {
@@ -89,7 +87,7 @@ class ReadiumConfig @Inject constructor(
     }
 
     suspend fun importBookFromUri(uri: Uri): ReaderResult<Long> {
-        val tempFile = uri.copyToTempFile(context.applicationContext, storageDir)
+        val tempFile = uri.copyToTempFile(application, storageDir)
         return if (tempFile != null) {
             importPublication(tempFile)
         } else ReaderResult.Failure(LocalReaderError("Files seems to be corrupted"))
@@ -135,7 +133,7 @@ class ReadiumConfig @Inject constructor(
     }
 
     private suspend fun getPublicationId(libraryAsset: FileAsset): ReaderResult<Long> {
-        getReadium().streamer.open(libraryAsset, allowUserInteraction = false)
+        return getReadium().streamer.open(libraryAsset, allowUserInteraction = false)
             .fold(
                 onSuccess = { publication ->
                     addPublicationToDatabase(
@@ -143,7 +141,7 @@ class ReadiumConfig @Inject constructor(
                         libraryAsset.mediaType(),
                         publication
                     ).let { id ->
-                        return if (id != -1L) {
+                        if (id != -1L) {
                             ReaderResult.Success(id)
                         } else {
                             ReaderResult.Failure(LocalReaderError("ImportDatabaseFailed"))
@@ -153,7 +151,7 @@ class ReadiumConfig @Inject constructor(
                 onFailure = {
                     tryOrNull { libraryAsset.file.delete() }
                     Timber.d(it)
-                    return ReaderResult.Failure(
+                    ReaderResult.Failure(
                         LocalReaderError(
                             "ImportPublicationFailed ${it.message}"
                         )
@@ -163,13 +161,13 @@ class ReadiumConfig @Inject constructor(
     }
 
     suspend fun openBook(bookId: Long, activity: Activity): ReaderResult<Unit> {
-        getReaderRepository().open(bookId, activity).fold(
+        return getReaderRepository().open(bookId, activity).fold(
             onSuccess = {
                 launchReaderActivity(context = activity)
-                return ReaderResult.Success(Unit)
+                ReaderResult.Success(Unit)
             },
             onFailure = {
-                return ReaderResult.Failure(LocalReaderError(it.message ?: "Unknown error"))
+                ReaderResult.Failure(LocalReaderError(it.message ?: "Unknown error"))
             }
         )
     }

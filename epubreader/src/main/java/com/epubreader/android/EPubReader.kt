@@ -1,17 +1,17 @@
 package com.epubreader.android
 
+import android.app.Application
 import android.content.Context
 
 object EPubReader {
-    private var readiumConfig: ReadiumConfig? = null
+    private var readerConfig: ReaderConfig? = null
 
-    fun init(context: Context) {
-        readiumConfig = ReadiumConfig(context)
+    private fun init(context: Context) {
+        this.readerConfig = ReaderConfig(context.applicationContext as Application)
     }
 
-
-    fun getReader(): Operation {
-        readiumConfig ?: throw IllegalStateException("Readium config not initiated")
-        return OperationImpl(readiumConfig!!)
+    fun getReader(): Reader {
+        readerConfig ?: throw IllegalStateException("Readium config not initialized")
+        return ReaderImpl(readerConfig!!)
     }
 }
