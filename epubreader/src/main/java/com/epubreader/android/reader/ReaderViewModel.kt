@@ -1,10 +1,9 @@
 package com.epubreader.android.reader
 
-import android.content.Context
+import android.app.Application
 import android.graphics.Color
 import androidx.annotation.ColorInt
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
@@ -19,7 +18,6 @@ import com.epubreader.android.reader.tts.TtsViewModel
 import com.epubreader.android.search.SearchPagingSource
 import com.epubreader.android.utils.EventChannel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,20 +43,8 @@ import javax.inject.Inject
 class ReaderViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val readerRepository: ReaderRepository,
-    @ApplicationContext context: Context,
-) : ViewModel() {
-    private val _readerInitData = mutableStateOf<ReaderInitData>(DummyReaderInitData(bookId = -1))
-    val readerInitData: ReaderInitData = _readerInitData.value
-
-    init {
-        _readerInitData.value = readerRepository.getReaderInit(bookId = 1)
-    }
-
-    val publication: Publication =
-        readerInitData.publication
-
-    val bookId: Long =
-        readerInitData.bookId
+    private val application: Application,
+) : AndroidViewModel(application) {
 
     val activityChannel: EventChannel<Event> =
         EventChannel(Channel(Channel.BUFFERED), viewModelScope)
@@ -66,11 +52,21 @@ class ReaderViewModel @Inject constructor(
     val fragmentChannel: EventChannel<FeedbackEvent> =
         EventChannel(Channel(Channel.BUFFERED), viewModelScope)
 
-    val tts: TtsViewModel? = TtsViewModel(
-        context = context,
-        publication = readerInitData.publication,
-        scope = viewModelScope
-    )
+    var readerInitData: ReaderInitData = DummyReaderInitData(bookId = -1)
+    val publication: Publication
+    val bookId: Long
+    val ttsModel: TtsViewModel?
+
+    init {
+        readerInitData = readerRepository.getReaderInit(bookId = 1)
+        publication = readerInitData.publication
+        bookId = readerInitData.bookId
+        ttsModel = TtsViewModel(
+            context = application,
+            publication = readerInitData.publication,
+            scope = viewModelScope
+        )
+    }
 
     val settings: UserPreferencesViewModel<*, *>? = UserPreferencesViewModel(
         viewModelScope = viewModelScope,
@@ -79,7 +75,7 @@ class ReaderViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        tts?.onCleared()
+        ttsModel?.onCleared()
     }
 
     fun saveProgression(locator: Locator) = viewModelScope.launch {
@@ -89,11 +85,13 @@ class ReaderViewModel @Inject constructor(
     fun getBookmarks() = bookRepository.bookmarksForBook(bookId)
 
     fun insertBookmark(locator: Locator) = viewModelScope.launch {
-        val id = bookRepository.insertBookmark(bookId, publication, locator)
-        if (id != -1L) {
-            fragmentChannel.send(FeedbackEvent.BookmarkSuccessfullyAdded)
-        } else {
-            fragmentChannel.send(FeedbackEvent.BookmarkFailed)
+        if (publication != null) {
+            val id = bookRepository.insertBookmark(bookId, publication, locator)
+            if (id != -1L) {
+                fragmentChannel.send(FeedbackEvent.BookmarkSuccessfullyAdded)
+            } else {
+                fragmentChannel.send(FeedbackEvent.BookmarkFailed)
+            }
         }
     }
 
@@ -196,6 +194,7 @@ class ReaderViewModel @Inject constructor(
 
     fun search(query: String) = viewModelScope.launch {
         if (query == lastSearchQuery) return@launch
+        if (publication == null) return@launch
         lastSearchQuery = query
         _searchLocators.value = emptyList()
         searchIterator = publication.search(query)
@@ -210,6 +209,10 @@ class ReaderViewModel @Inject constructor(
         searchIterator?.close()
         searchIterator = null
         pagingSourceFactory.invalidate()
+    }
+
+    fun setUpArgs() {
+
     }
 
     val searchLocators: StateFlow<List<Locator>> get() = _searchLocators

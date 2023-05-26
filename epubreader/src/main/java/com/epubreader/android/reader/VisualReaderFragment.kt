@@ -125,7 +125,7 @@ abstract class VisualReaderFragment : BaseReaderFragment(), VisualNavigator.List
 
     @Composable
     private fun BoxScope.Overlay() {
-        model.tts?.let { tts ->
+        model.ttsModel?.let { tts ->
             TtsControls(
                 model = tts,
                 modifier = Modifier
@@ -171,7 +171,7 @@ abstract class VisualReaderFragment : BaseReaderFragment(), VisualNavigator.List
      * Setup text-to-speech observers, if available.
      */
     private suspend fun setupTts(scope: CoroutineScope) {
-        model.tts?.apply {
+        model.ttsModel?.apply {
             events
                 .onEach { event ->
                     when (event) {
@@ -238,7 +238,7 @@ abstract class VisualReaderFragment : BaseReaderFragment(), VisualNavigator.List
      */
     private suspend fun confirmAndInstallTtsVoice(language: Language) {
         val activity = activity ?: return
-        val tts = model.tts ?: return
+        val tts = model.ttsModel ?: return
 
         if (
             activity.confirmDialog(
@@ -257,7 +257,7 @@ abstract class VisualReaderFragment : BaseReaderFragment(), VisualNavigator.List
     override fun onStop() {
         super.onStop()
 
-        model.tts?.pause()
+        model.ttsModel?.pause()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -268,12 +268,12 @@ abstract class VisualReaderFragment : BaseReaderFragment(), VisualNavigator.List
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, menuInflater)
-        menu.findItem(R.id.tts).isVisible = (model.tts != null)
+        menu.findItem(R.id.tts).isVisible = (model.ttsModel != null)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.tts -> checkNotNull(model.tts).start(navigator)
+            R.id.tts -> checkNotNull(model.ttsModel).start(navigator)
             else -> return super.onOptionsItemSelected(item)
         }
         return true

@@ -3,7 +3,7 @@ package com.epubreader.android
 import android.content.Context
 
 object EPubReader {
-    var readiumConfig: ReadiumConfig? = null
+    private var readiumConfig: ReadiumConfig? = null
 
     fun init(context: Context) {
         readiumConfig = ReadiumConfig(context)

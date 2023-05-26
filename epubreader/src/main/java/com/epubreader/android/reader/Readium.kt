@@ -4,7 +4,7 @@
  * available in the top-level LICENSE file of the project.
  */
 
-package com.epubreader.android
+package com.epubreader.android.reader
 
 import android.content.Context
 import org.readium.r2.lcp.LcpService

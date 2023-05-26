@@ -13,11 +13,9 @@ import androidx.fragment.app.FragmentResultListener
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
-import com.epubreader.android.LITERATA
 import com.epubreader.android.R
 import com.epubreader.android.reader.preferences.UserPreferencesViewModel
 import com.epubreader.android.search.SearchFragment
-import dagger.hilt.android.AndroidEntryPoint
 import org.readium.r2.navigator.DecorableNavigator
 import org.readium.r2.navigator.Decoration
 import org.readium.r2.navigator.ExperimentalDecorator

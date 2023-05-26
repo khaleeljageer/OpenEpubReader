@@ -4,6 +4,6 @@
     <application>
         <activity
             android:name=".reader.ReaderActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/Theme.Material3.DayNight" />
     </application>
 </manifest>

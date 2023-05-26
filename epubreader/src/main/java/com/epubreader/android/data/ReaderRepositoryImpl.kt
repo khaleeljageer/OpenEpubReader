@@ -2,7 +2,7 @@ package com.epubreader.android.data
 
 import android.app.Activity
 import androidx.datastore.core.DataStore
-import com.epubreader.android.Readium
+import com.epubreader.android.reader.Readium
 import com.epubreader.android.reader.DummyReaderInitData
 import com.epubreader.android.reader.EpubReaderInitData
 import com.epubreader.android.reader.ReaderInitData

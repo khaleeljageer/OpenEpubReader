@@ -9,6 +9,7 @@ import android.net.Uri
 import com.epubreader.android.data.BookRepository
 import com.epubreader.android.data.ReaderRepository
 import com.epubreader.android.reader.ReaderActivity
+import com.epubreader.android.reader.Readium
 import com.epubreader.android.utils.LocalReaderError
 import com.epubreader.android.utils.ReaderResult
 import com.epubreader.android.utils.extensions.computeStorageDir

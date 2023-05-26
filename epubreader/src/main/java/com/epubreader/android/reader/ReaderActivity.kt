@@ -44,24 +44,28 @@ open class ReaderActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val binding = ActivityReaderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        readerViewModel.setUpArgs()
+
         /*
         * We provide dummy publications if the [ReaderActivity] is restored after the app process
         * was killed because the [ReaderRepository] is empty.
         * In that case, finish the activity as soon as possible and go back to the previous one.
         */
         if (readerViewModel.publication.readingOrder.isEmpty()) {
+            Timber.tag("Khaleel").d("Finishing Activity")
+            Timber.tag("Khaleel").d("publication : ${readerViewModel.publication.readingOrder}")
             finish()
         }
-
-        val binding = ActivityReaderBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         this.binding = binding
 
         val readerFragment = supportFragmentManager.findFragmentByTag(READER_FRAGMENT_TAG)
             ?.let { it as BaseReaderFragment }
             ?: run {
-                Timber.tag("Khaleel").d("${readerViewModel.readerInitData}")
+                Timber.tag("Khaleel").d("readerFragment ${readerViewModel.readerInitData}")
                 createReaderFragment(readerViewModel.readerInitData)
             }
 

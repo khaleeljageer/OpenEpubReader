@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.epubreader.android.LITERATA
+import com.epubreader.android.reader.LITERATA
 import com.epubreader.android.utils.compose.ColorPicker
 import com.epubreader.android.utils.compose.DropdownMenuButton
 import com.epubreader.android.utils.compose.ToggleButtonGroup
