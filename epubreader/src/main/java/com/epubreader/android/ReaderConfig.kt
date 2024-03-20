@@ -15,7 +15,6 @@ import com.epubreader.android.utils.ReaderResult
 import com.epubreader.android.utils.extensions.computeStorageDir
 import com.epubreader.android.utils.extensions.copyToTempFile
 import com.epubreader.android.utils.extensions.moveTo
-import com.google.android.material.color.DynamicColors
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -69,12 +68,6 @@ class ReaderConfig(private val application: Application) {
 
     private fun provideCoroutineScope(): CoroutineScope {
         return hiltEntryPoint.provideCoroutineScope()
-    }
-
-
-    init {
-        DynamicColors.applyToActivitiesIfAvailable(application)
-        Timber.plant(Timber.DebugTree())
     }
 
     suspend fun importBookFromAsset(fileName: String): ReaderResult<Long> {
@@ -142,6 +135,7 @@ class ReaderConfig(private val application: Application) {
                         publication
                     ).let { id ->
                         if (id != -1L) {
+                            openBook(id, application.applicationContext)
                             ReaderResult.Success(id)
                         } else {
                             ReaderResult.Failure(LocalReaderError("ImportDatabaseFailed"))
@@ -160,10 +154,10 @@ class ReaderConfig(private val application: Application) {
             )
     }
 
-    suspend fun openBook(bookId: Long, activity: Activity): ReaderResult<Unit> {
-        return getReaderRepository().open(bookId, activity).fold(
+    suspend fun openBook(bookId: Long, context: Context): ReaderResult<Unit> {
+        return getReaderRepository().open(bookId, context).fold(
             onSuccess = {
-                launchReaderActivity(context = activity)
+                launchReaderActivity(context = context)
                 ReaderResult.Success(Unit)
             },
             onFailure = {
@@ -174,6 +168,7 @@ class ReaderConfig(private val application: Application) {
 
     private fun launchReaderActivity(context: Context) {
         val intent = Intent(context, ReaderActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.putExtra("book_id", 1)
         context.startActivity(intent)
     }

@@ -1,6 +1,6 @@
 package com.epubreader.android.data
 
-import android.app.Activity
+import android.content.Context
 import androidx.datastore.core.DataStore
 import com.epubreader.android.reader.Readium
 import com.epubreader.android.reader.DummyReaderInitData
@@ -45,9 +45,9 @@ class ReaderRepositoryImpl @Inject constructor(
         return repository[bookId] ?: DummyReaderInitData(bookId = bookId)
     }
 
-    override suspend fun open(bookId: Long, activity: Activity): Try<Unit, Exception> {
+    override suspend fun open(bookId: Long, context: Context): Try<Unit, Exception> {
         return try {
-            openThrowing(bookId, activity)
+            openThrowing(bookId, context)
             Try.success(Unit)
         } catch (e: Exception) {
             Try.failure(e)
@@ -66,7 +66,7 @@ class ReaderRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun openThrowing(bookId: Long, activity: Activity) {
+    private suspend fun openThrowing(bookId: Long, context: Context) {
         if (bookId in repository.keys) {
             return
         }
@@ -79,7 +79,7 @@ class ReaderRepositoryImpl @Inject constructor(
         val asset = FileAsset(file)
 
         val publication =
-            readium.streamer.open(asset, allowUserInteraction = true, sender = activity)
+            readium.streamer.open(asset, allowUserInteraction = true, sender = context)
                 .getOrThrow()
 
         // The publication is protected with a DRM and not unlocked.

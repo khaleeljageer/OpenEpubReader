@@ -84,7 +84,6 @@ dependencies {
 
     implementation(project(":epubreader"))
 
-
     //==================== Dependency Injection ====================
     implementation("com.google.dagger:hilt-android:2.44.2")
     kapt("com.google.dagger:hilt-compiler:2.44.2")

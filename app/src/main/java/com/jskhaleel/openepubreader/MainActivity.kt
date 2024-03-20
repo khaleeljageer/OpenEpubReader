@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.epubreader.android.EPubReader
+import com.epubreader.android.FileType
 import com.epubreader.android.ReaderConfig
 import com.epubreader.android.utils.onFailure
 import com.epubreader.android.utils.onSuccess
@@ -61,16 +63,18 @@ fun MainPage(
         Button(
             onClick = {
                 scope.launch(Dispatchers.IO) {
-                    val config = ReaderConfig(context)
-                    config
-                        .importBookFromAsset("1946.epub")
-                        .onSuccess {
-                            Log.d("Khaleel", "onSuccess $it")
-                            config.openBook(it, context as Activity)
-                        }
-                        .onFailure {
-                            Log.d("Khaleel", "onFailure ${it.message}")
-                        }
+//                    val config = ReaderConfig(context)
+//                    config
+//                        .importBookFromAsset("1946.epub")
+//                        .onSuccess {
+//                            Log.d("Khaleel", "onSuccess $it")
+//                            config.openBook(it, context as Activity)
+//                        }
+//                        .onFailure {
+//                            Log.d("Khaleel", "onFailure ${it.message}")
+//                        }
+                    EPubReader.init(context)
+                    EPubReader.getReader().openBook(FileType.Asset("1946.epub"))
                 }
             },
         ) {
@@ -80,16 +84,17 @@ fun MainPage(
 }
 
 @Throws(IOException::class)
-fun getFileFromAssets(context: Context, fileName: String): File = File(context.cacheDir, fileName)
-    .also {
-        if (!it.exists()) {
-            it.outputStream().use { cache ->
-                context.assets.open(fileName).use { inputStream ->
-                    inputStream.copyTo(cache)
+fun getFileFromAssets(context: Context, fileName: String): File =
+    File(context.cacheDir, fileName)
+        .also {
+            if (!it.exists()) {
+                it.outputStream().use { cache ->
+                    context.assets.open(fileName).use { inputStream ->
+                        inputStream.copyTo(cache)
+                    }
                 }
             }
         }
-    }
 
 
 @Preview(showBackground = true)
